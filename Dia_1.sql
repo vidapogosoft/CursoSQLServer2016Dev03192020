@@ -169,8 +169,48 @@ begin
 
 end
 
-
-
-
+select * from cuponera..Cupones
 
 ---------------------------------
+--restricciones en tablas sql server check y unique
+
+use cuponera
+go
+
+---Unique
+alter table proveedores
+add constraint UN_Identificaion UNIQUE (Identificacion)
+go
+
+---check
+alter table proveedores
+add constraint CC_Identificacion CHECK (len(Identificacion) >= 10)
+
+
+---------Tablas Temporales
+---Fisicas
+---Memoria
+
+---Fisicas
+
+create table #NombreTabla
+(
+	Secuecial int,
+	Descripcion varchar(max)
+)
+
+select * from #NombreTabla
+
+drop table #NombreTabla
+
+---Memoria
+
+declare @NombreTabla table
+(
+	Secuecial int,
+	Descripcion varchar(max)
+)
+
+select * from @NombreTabla
+
+
