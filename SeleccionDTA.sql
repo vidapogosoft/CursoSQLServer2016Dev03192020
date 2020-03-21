@@ -18,3 +18,4 @@ end as RecibioEmail
 from Person.Person  -- seleccionar con operadores
 where (PersonType = 'IN' and Title = 'Mr.') or EmailPromotion = 0
 order by LastName desc, Titulo asc
+
