@@ -81,6 +81,8 @@ AdventureWorks2014.Production.WorkOrder' ,
      @subject = 'Work Order Count',
      @attach_query_result_as_file = 1 ;
 
+SELECT top 1000 * FROM AdventureWorks2014.Production.WorkOrder
+
 EXEC msdb.dbo.sp_send_dbmail
      @profile_name = 'Notifications',
      @recipients = 'vidapogosoft@gmail.com',
@@ -88,3 +90,59 @@ EXEC msdb.dbo.sp_send_dbmail
 AdventureWorks2014.Production.WorkOrder' ,
      @subject = 'Work Order Count',
      @attach_query_result_as_file = 1 ;
+
+-------------------------------------------------------------------------
+
+select top 10 *
+FROM AdventureWorks2014.Production.WorkOrder as wo
+               JOIN AdventureWorks2014.Production.Product AS p
+               ON wo.ProductID = p.ProductID
+               ORDER BY DueDate ASC,
+                        (p.ListPrice - p.StandardCost) * wo.OrderQty DESC
+FOR XML PATH('tr'), TYPE
+
+DECLARE @tableHTML  NVARCHAR(MAX) ;
+
+SET @tableHTML =
+     N'<H1>Work Order Report</H1>' +
+     N'<table border="1">' +
+     N'<tr><th>Work Order ID</th><th>Product ID</th>' +
+     N'<th>Name</th><th>Order Qty</th><th>Due Date</th>' +
+     N'<th>Expected Revenue</th></tr>' +
+     CAST ( ( SELECT top 5000 td = wo.WorkOrderID,       '',
+                     td = p.ProductID, '',
+                     td = p.Name, '',
+                     td = wo.OrderQty, '',
+                     td = wo.DueDate, '',
+                     td = (p.ListPrice - p.StandardCost) * wo.OrderQty
+               FROM AdventureWorks2014.Production.WorkOrder as wo
+               JOIN AdventureWorks2014.Production.Product AS p
+               ON wo.ProductID = p.ProductID
+               ORDER BY DueDate ASC,
+                        (p.ListPrice - p.StandardCost) * wo.OrderQty DESC
+               FOR XML PATH('tr'), TYPE
+     ) AS NVARCHAR(MAX) ) +
+     N'</table>' ;
+
+
+EXEC msdb.dbo.sp_send_dbmail
+     @profile_name = 'Notifications',
+     @recipients = 'vidapogosoft@gmail.com',
+     @subject = 'Work Order Count 5000',
+	 @body = @tableHTML,
+	 @body_format = 'HTML'
+
+------------------adjunto un csv
+
+exec msdb.dbo.sp_send_dbmail
+@profile_name = 'Notifications',
+@Recipients= 'vidapogosoft@gmail.com',
+@Subject= 'ejemplo csv',
+@Body= 'ejemplo csv',
+@query = 'SELECT top 1000 * FROM AdventureWorks2014.Production.WorkOrder',
+@attach_query_result_as_file = 1,
+@query_attachment_filename = 'sample.csv',
+@query_result_separator = ',',
+@query_result_header = 1,
+@query_result_no_padding = 1,
+@exclude_query_output = 1
