@@ -16,14 +16,14 @@ go
 ---Creamos un perfil de Email
 
 execute  msdb.dbo.sysmail_add_profile_sp
-@profile_name = 'Notifications',
-@description = 'Profile Email using GMAIL'
+@profile_name = 'NotificationsVPR',
+@description = 'Profile Email using GMAIL VPR'
 go
 
 ----Agregar rol de DBMAil al profile
 
 execute msdb.dbo.sysmail_add_principalprofile_sp
-@profile_name= 'Notifications',
+@profile_name= 'NotificationsVPR',
 @principal_name = 'public',
 @is_default = 1
 go
@@ -46,7 +46,7 @@ execute msdb.dbo.sysmail_add_account_sp
 ------Agregar la cuenta al profile
 
 execute msdb.dbo.sysmail_add_profileaccount_sp
-@profile_name = 'Notifications',
+@profile_name = 'NotificationsVPR',
 @account_name = 'Gmail',
 @sequence_number = 1
 
@@ -54,10 +54,10 @@ execute msdb.dbo.sysmail_add_profileaccount_sp
 -----------------------
 
 exec msdb.dbo.sp_send_dbmail
-@profile_name = 'Notifications',
+@profile_name = 'NotificationsVPR',
 @recipients = 'vidapogosoft@gmail.com',
 @body = 'Ejemplo de database email con transact sql',
-@subject = 'Automatic Email - SIPECOM'
+@subject = 'Automatic Email - SIPECOM AGOSTO 2020'
 
 
 
